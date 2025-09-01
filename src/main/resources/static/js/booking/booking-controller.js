@@ -4,7 +4,11 @@ class BookingController {
         this.currentStep = 1;
         this.selectedSite = null;
         this.availableSites = [];
+        this.filteredSites = [];
         this.bookingData = {};
+        this.currentPage = 1;
+        this.sitesPerPage = 10;
+        this.selectedLocation = '';
     }
 
     init() {
@@ -46,6 +50,15 @@ class BookingController {
 
         // Real-time validation
         this.setupRealTimeValidation();
+
+        // Location filter listeners
+        document.addEventListener('change', (e) => {
+            if (e.target.name === 'locationFilter') {
+                this.selectedLocation = e.target.value;
+                this.currentPage = 1;
+                this.filterAndDisplaySites();
+            }
+        });
     }
 
     setupRealTimeValidation() {
@@ -150,7 +163,22 @@ class BookingController {
             }
 
             this.availableSites = sites;
-            this.displayAvailableSites(sites);
+            this.currentPage = 1;
+            this.selectedLocation = '';
+            
+            // Hide location filters for tent sites since they're all in one location
+            const locationFilters = document.getElementById('locationFilters');
+            const isTentSite = document.querySelector('input[name="siteType"]:checked').value === 'TENT';
+            
+            if (isTentSite) {
+                locationFilters.parentElement.style.display = 'none';
+            } else {
+                locationFilters.parentElement.style.display = 'block';
+                // Reset to "All Locations" for RV sites
+                document.getElementById('allLocations').checked = true;
+            }
+            
+            this.filterAndDisplaySites();
             this.goToStep(2);
             
             window.notifications.success(`Found ${sites.length} available ${siteType.toLowerCase().replace('_', ' ')} sites!`);
@@ -182,6 +210,113 @@ class BookingController {
             siteCard.addEventListener('click', () => this.selectSite(site));
             container.appendChild(siteCard);
         });
+    }
+
+    filterAndDisplaySites() {
+        // Filter sites by location
+        this.filteredSites = this.selectedLocation ? 
+            this.availableSites.filter(site => site.location === this.selectedLocation) : 
+            this.availableSites;
+
+        // Calculate pagination
+        const totalPages = Math.ceil(this.filteredSites.length / this.sitesPerPage);
+        const startIndex = (this.currentPage - 1) * this.sitesPerPage;
+        const endIndex = startIndex + this.sitesPerPage;
+        const sitesToShow = this.filteredSites.slice(startIndex, endIndex);
+
+        // Display sites
+        this.displaySitesPage(sitesToShow);
+        
+        // Update pagination controls
+        this.updatePaginationControls(totalPages);
+    }
+
+    displaySitesPage(sites) {
+        const container = document.getElementById('availableSites');
+        container.innerHTML = '';
+
+        if (sites.length === 0) {
+            container.innerHTML = `
+                <div class="col-12 text-center">
+                    <div class="alert alert-info">
+                        <i class="bi bi-info-circle me-2"></i>
+                        No sites available in the selected location. Try a different location.
+                    </div>
+                </div>
+            `;
+            return;
+        }
+
+        sites.forEach(site => {
+            const siteCard = document.createElement('div');
+            siteCard.className = 'col-md-6 col-lg-4 mb-3';
+            siteCard.innerHTML = `
+                <div class="card site-selection-card" data-site-id="${site.id}" style="cursor: pointer;">
+                    <div class="card-body text-center">
+                        <h6 class="card-title">Site ${site.siteNumber}</h6>
+                        <p class="text-muted mb-1">${site.siteType.replace('_', ' ')}</p>
+                        <small class="text-info mb-1">${site.location.replace('_', ' ')}</small>
+                        <p class="fw-bold text-success">$${site.dailyRate}/night</p>
+                        <small class="text-muted">Max ${site.maxPartySize} people</small>
+                    </div>
+                </div>
+            `;
+
+            siteCard.addEventListener('click', () => this.selectSite(site));
+            container.appendChild(siteCard);
+        });
+    }
+
+    updatePaginationControls(totalPages) {
+        const paginationControls = document.getElementById('paginationControls');
+        
+        if (totalPages <= 1) {
+            paginationControls.style.display = 'none';
+            return;
+        }
+
+        paginationControls.style.display = 'block';
+        
+        // Update page numbers
+        const pageNumbers = document.getElementById('pageNumbers');
+        pageNumbers.innerHTML = '';
+        
+        for (let i = 1; i <= totalPages; i++) {
+            const pageItem = document.createElement('li');
+            pageItem.className = `page-item ${i === this.currentPage ? 'active' : ''}`;
+            pageItem.innerHTML = `<a class="page-link" href="#" data-page="${i}">${i}</a>`;
+            pageNumbers.appendChild(pageItem);
+        }
+
+        // Update prev/next buttons
+        document.getElementById('prevPage').classList.toggle('disabled', this.currentPage === 1);
+        document.getElementById('nextPage').classList.toggle('disabled', this.currentPage === totalPages);
+
+        // Add click listeners for pagination
+        document.querySelectorAll('.page-link[data-page]').forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                this.currentPage = parseInt(e.target.dataset.page);
+                this.filterAndDisplaySites();
+            });
+        });
+
+        // Prev/next buttons
+        document.getElementById('prevPage').querySelector('.page-link').onclick = (e) => {
+            e.preventDefault();
+            if (this.currentPage > 1) {
+                this.currentPage--;
+                this.filterAndDisplaySites();
+            }
+        };
+
+        document.getElementById('nextPage').querySelector('.page-link').onclick = (e) => {
+            e.preventDefault();
+            if (this.currentPage < totalPages) {
+                this.currentPage++;
+                this.filterAndDisplaySites();
+            }
+        };
     }
 
     selectSite(site) {
@@ -321,9 +456,12 @@ class BookingController {
                 errorMessage = 'Please enter a valid phone number.';
                 break;
             case 'startDate':
-            case 'endDate':
                 isValid = validator.isFutureDate(value);
-                errorMessage = 'Date must be today or in the future.';
+                errorMessage = 'Check-in date must be today or in the future.';
+                break;
+            case 'endDate':
+                isValid = validator.isStrictlyFutureDate(value);
+                errorMessage = 'Check-out date must be in the future.';
                 break;
         }
 

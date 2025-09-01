@@ -124,8 +124,53 @@
                                 <h5 class="text-success mb-3">
                                     <span class="badge bg-success me-2">2</span>Choose Your Site
                                 </h5>
+                                
+                                <!-- Location Filter -->
+                                <div class="row mb-4">
+                                    <div class="col-12">
+                                        <label class="form-label">Choose Location</label>
+                                        <div class="btn-group w-100" role="group" id="locationFilters">
+                                            <input type="radio" class="btn-check" name="locationFilter" id="allLocations" value="" checked>
+                                            <label class="btn btn-outline-success" for="allLocations">All Locations</label>
+                                            
+                                            <input type="radio" class="btn-check" name="locationFilter" id="woods" value="WOODS">
+                                            <label class="btn btn-outline-success" for="woods">Woods</label>
+                                            
+                                            <input type="radio" class="btn-check" name="locationFilter" id="atvPark" value="ATV_PARK">
+                                            <label class="btn btn-outline-success" for="atvPark">ATV Park</label>
+                                            
+                                            <input type="radio" class="btn-check" name="locationFilter" id="lake" value="LAKE">
+                                            <label class="btn btn-outline-success" for="lake">Lake</label>
+                                            
+                                            <input type="radio" class="btn-check" name="locationFilter" id="baseCamp" value="BASE_CAMP">
+                                            <label class="btn btn-outline-success" for="baseCamp">Base Camp</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                
                                 <div id="availableSites" class="row">
                                     <!-- Available sites will be populated here -->
+                                </div>
+                                
+                                <!-- Pagination Controls -->
+                                <div class="row mt-4" id="paginationControls" style="display: none;">
+                                    <div class="col-12 text-center">
+                                        <nav>
+                                            <ul class="pagination justify-content-center">
+                                                <li class="page-item" id="prevPage">
+                                                    <a class="page-link" href="#" aria-label="Previous">
+                                                        <span aria-hidden="true">&laquo;</span>
+                                                    </a>
+                                                </li>
+                                                <div id="pageNumbers"></div>
+                                                <li class="page-item" id="nextPage">
+                                                    <a class="page-link" href="#" aria-label="Next">
+                                                        <span aria-hidden="true">&raquo;</span>
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                        </nav>
+                                    </div>
                                 </div>
                                 <div class="mt-3">
                                     <button type="button" class="btn btn-outline-secondary me-2" onclick="window.BookingController.goToStep(1)">
