@@ -23,12 +23,20 @@ class ValidationService {
         return dateObj instanceof Date && !isNaN(dateObj);
     }
 
-    // Future date validation
+    // Future date validation (includes today)
     isFutureDate(date) {
         const dateObj = new Date(date);
         const today = new Date();
         today.setHours(0, 0, 0, 0);
         return dateObj >= today;
+    }
+
+    // Strictly future date validation (excludes today)
+    isStrictlyFutureDate(date) {
+        const dateObj = new Date(date);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        return dateObj > today;
     }
 
     // Date range validation
