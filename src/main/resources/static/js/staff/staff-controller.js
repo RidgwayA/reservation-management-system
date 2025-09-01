@@ -9,11 +9,14 @@ class StaffController {
 
     async init() {
         try {
+            console.log('Initializing StaffController...');
             await this.loadDashboardData();
+            console.log('Data loaded - reservations:', this.reservations.length, 'campsites:', this.campsites.length);
             this.updateStats();
             this.setupEventListeners();
             // Auto-populate the default active tab (check-ins)
             this.populateCheckinsTable();
+            console.log('StaffController initialization complete');
         } catch (error) {
             console.error('Error initializing staff dashboard:', error);
             window.notifications.error('Error loading dashboard data.');
@@ -21,10 +24,17 @@ class StaffController {
     }
 
     setupEventListeners() {
+        console.log('Setting up event listeners...');
+        
         // Tab change events
-        document.querySelectorAll('[data-bs-toggle="tab"]').forEach(tab => {
+        const tabs = document.querySelectorAll('[data-bs-toggle="tab"]');
+        console.log('Found tabs:', tabs.length);
+        
+        tabs.forEach(tab => {
+            console.log('Setting up listener for tab:', tab.getAttribute('data-bs-target'));
             tab.addEventListener('shown.bs.tab', (e) => {
                 const targetTab = e.target.getAttribute('data-bs-target');
+                console.log('Tab changed to:', targetTab);
                 this.onTabChange(targetTab);
             });
         });
@@ -74,6 +84,7 @@ class StaffController {
     }
 
     onTabChange(targetTab) {
+        console.log('onTabChange called with:', targetTab);
         switch (targetTab) {
             case '#checkin':
                 this.populateCheckinsTable();
@@ -85,8 +96,11 @@ class StaffController {
                 this.populateReservationsTable();
                 break;
             case '#sites':
+                console.log('Sites tab selected - calling populateSitesTable()');
                 this.populateSitesTable();
                 break;
+            default:
+                console.log('Unknown tab:', targetTab);
         }
     }
 
@@ -217,14 +231,23 @@ class StaffController {
     }
 
     populateSitesTable() {
+        console.log('populateSitesTable() called');
+        console.log('this.campsites.length:', this.campsites.length);
+        console.log('this.reservations.length:', this.reservations.length);
+        
         const tbody = document.getElementById('sitesTableBody');
         
         if (this.campsites.length === 0) {
+            console.log('No campsites found, showing empty message');
             tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted">No campsites found</td></tr>';
             return;
         }
 
-        tbody.innerHTML = this.campsites.map(site => `
+        tbody.innerHTML = this.campsites.map(site => {
+            // Determine actual status based on reservations
+            const actualStatus = this.getSiteActualStatus(site);
+            
+            return `
             <tr>
                 <td>
                     <strong>${site.siteNumber}</strong>
@@ -235,7 +258,7 @@ class StaffController {
                     </span>
                 </td>
                 <td>
-                    <span class="badge bg-${this.getSiteStatusColor(site.status)}">${site.status}</span>
+                    <span class="badge bg-${this.getSiteStatusColor(actualStatus)}">${actualStatus}</span>
                 </td>
                 <td>
                     $${site.dailyRate}/night
@@ -256,7 +279,8 @@ class StaffController {
                     </div>
                 </td>
             </tr>
-        `).join('');
+            `;
+        }).join('');
     }
 
     getStatusColor(status) {
@@ -270,10 +294,57 @@ class StaffController {
         return colors[status] || 'secondary';
     }
 
+    getSiteActualStatus(site) {
+        // First check if site has static maintenance status
+        if (site.status === 'MAINTENANCE' || site.status === 'OUT_OF_ORDER') {
+            return site.status;
+        }
+
+        // Check if site has active reservations today
+        const today = new Date().toISOString().split('T')[0];
+        console.log(`Checking site ${site.siteNumber}, today is ${today}`);
+        
+        const siteReservations = this.reservations.filter(reservation => {
+            if (reservation.campsite && reservation.campsite.id === site.id) {
+                console.log(`Found reservation for site ${site.siteNumber}: status=${reservation.status}, start=${reservation.startDate}, end=${reservation.endDate}`);
+                // Check if reservation is active (CONFIRMED or CHECKED_IN) and overlaps with today
+                if (['CONFIRMED', 'CHECKED_IN'].includes(reservation.status)) {
+                    const startDate = reservation.startDate;
+                    const endDate = reservation.endDate;
+                    
+                    // Check if today falls within the reservation period
+                    const overlaps = startDate <= today && endDate >= today;
+                    console.log(`  Date overlap check: ${startDate} <= ${today} <= ${endDate} = ${overlaps}`);
+                    return overlaps;
+                }
+            }
+            return false;
+        });
+
+        console.log(`Site ${site.siteNumber} has ${siteReservations.length} active reservations`);
+
+        if (siteReservations.length > 0) {
+            // If there's a checked-in reservation, site is occupied
+            if (siteReservations.some(r => r.status === 'CHECKED_IN')) {
+                console.log(`Site ${site.siteNumber} is OCCUPIED`);
+                return 'OCCUPIED';
+            }
+            // If there's a confirmed reservation, site is reserved
+            if (siteReservations.some(r => r.status === 'CONFIRMED')) {
+                console.log(`Site ${site.siteNumber} is RESERVED`);
+                return 'RESERVED';
+            }
+        }
+
+        console.log(`Site ${site.siteNumber} is AVAILABLE`);
+        return 'AVAILABLE';
+    }
+
     getSiteStatusColor(status) {
         const colors = {
             'AVAILABLE': 'success',
-            'OCCUPIED': 'warning',
+            'OCCUPIED': 'danger', 
+            'RESERVED': 'warning',
             'MAINTENANCE': 'danger',
             'OUT_OF_ORDER': 'dark'
         };
@@ -440,4 +511,6 @@ Status: ${reservation.status}
 }
 
 // Create global instance
+console.log('Creating StaffController instance...');
 window.StaffController = new StaffController();
+console.log('StaffController instance created:', window.StaffController);
