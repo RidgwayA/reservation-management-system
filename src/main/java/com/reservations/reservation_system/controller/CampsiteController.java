@@ -3,6 +3,7 @@ package com.reservations.reservation_system.controller;
 import com.reservations.reservation_system.dto.CampsiteDto;
 import com.reservations.reservation_system.entity.Campsite;
 import com.reservations.reservation_system.enums.CampsiteType;
+import com.reservations.reservation_system.enums.CampsiteLocation;
 import com.reservations.reservation_system.repository.CampsiteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -59,16 +60,19 @@ public class CampsiteController {
     public List<CampsiteDto> getAvailableCampsitesForDates(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
-            @RequestParam(required = false) CampsiteType siteType) {
+            @RequestParam(required = false) CampsiteType siteType,
+            @RequestParam(required = false) CampsiteLocation location) {
         
         if (siteType != null) {
             return campsiteRepository.findAvailableCampsitesForDateRangeAndType(startDate, endDate, siteType)
                     .stream()
+                    .filter(campsite -> location == null || campsite.getLocation() == location)
                     .map(this::convertToDto)
                     .collect(Collectors.toList());
         } else {
             return campsiteRepository.findAvailableCampsitesForDateRange(startDate, endDate)
                     .stream()
+                    .filter(campsite -> location == null || campsite.getLocation() == location)
                     .map(this::convertToDto)
                     .collect(Collectors.toList());
         }
@@ -111,6 +115,7 @@ public class CampsiteController {
         dto.setSiteNumber(campsite.getSiteNumber());
         dto.setSiteType(campsite.getSiteType());
         dto.setStatus(campsite.getStatus());
+        dto.setLocation(campsite.getLocation());
         dto.setDailyRate(campsite.getDailyRate());
         dto.setMaxPartySize(campsite.getMaxPartySize());
         dto.setNotes(campsite.getNotes());
