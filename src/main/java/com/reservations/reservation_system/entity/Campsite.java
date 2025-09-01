@@ -2,6 +2,7 @@ package com.reservations.reservation_system.entity;
 
 import com.reservations.reservation_system.enums.CampsiteStatus;
 import com.reservations.reservation_system.enums.CampsiteType;
+import com.reservations.reservation_system.enums.CampsiteLocation;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Min;
@@ -37,6 +38,11 @@ public class Campsite extends BaseEntity {
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
     private CampsiteStatus status = CampsiteStatus.AVAILABLE;
+    
+    @NotNull(message = "Location is required")
+    @Enumerated(EnumType.STRING)
+    @Column(name = "location", nullable = false)
+    private CampsiteLocation location;
     
     @Column(name = "notes")
     private String notes;
