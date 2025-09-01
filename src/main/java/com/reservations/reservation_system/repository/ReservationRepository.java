@@ -14,7 +14,8 @@ import java.util.Optional;
 @Repository
 public interface ReservationRepository extends JpaRepository<Reservation, Long> {
     
-    Optional<Reservation> findByConfirmationNumber(String confirmationNumber);
+    @Query("SELECT r FROM Reservation r WHERE r.confirmationNumber = :confirmationNumber AND r.active = true")
+    Optional<Reservation> findByConfirmationNumber(@Param("confirmationNumber") String confirmationNumber);
     
     List<Reservation> findByCustomerId(Long customerId);
     
