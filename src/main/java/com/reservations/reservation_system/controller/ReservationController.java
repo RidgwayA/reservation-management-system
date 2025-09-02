@@ -13,6 +13,7 @@ import com.reservations.reservation_system.valueobject.Money;
 import com.reservations.reservation_system.valueobject.ContactInfo;
 import com.reservations.reservation_system.entity.Customer;
 import com.reservations.reservation_system.entity.Campsite;
+import com.reservations.reservation_system.service.EmailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
@@ -36,6 +37,9 @@ public class ReservationController {
     
     @Autowired
     private CampsiteRepository campsiteRepository;
+    
+    @Autowired
+    private EmailService emailService;
     
     @GetMapping
     public List<ReservationDto> getAllReservations() {
@@ -136,6 +140,15 @@ public class ReservationController {
             
             Reservation saved = reservationRepository.save(reservation);
             System.out.println("DEBUG: Saved reservation with ID: " + saved.getId());
+            
+            // Send confirmation email asynchronously (don't let email failure break booking)
+            try {
+                emailService.sendConfirmationEmail(saved);
+                System.out.println("DEBUG: Confirmation email triggered for: " + saved.getConfirmationNumber());
+            } catch (Exception e) {
+                System.err.println("WARNING: Failed to send confirmation email for " + saved.getConfirmationNumber() + ": " + e.getMessage());
+                // Continue - email failure shouldn't break the booking process
+            }
             
             ReservationDto result = convertToDto(saved);
             System.out.println("DEBUG: Returning DTO: " + result);
