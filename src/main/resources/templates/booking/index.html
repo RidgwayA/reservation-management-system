@@ -156,13 +156,13 @@
                                 <div class="row mt-4" id="paginationControls" style="display: none;">
                                     <div class="col-12 text-center">
                                         <nav>
-                                            <ul class="pagination justify-content-center">
+                                            <ul class="pagination justify-content-center" id="pageNumbers">
                                                 <li class="page-item" id="prevPage">
                                                     <a class="page-link" href="#" aria-label="Previous">
                                                         <span aria-hidden="true">&laquo;</span>
                                                     </a>
                                                 </li>
-                                                <div id="pageNumbers"></div>
+                                                <!-- Page numbers will be inserted here -->
                                                 <li class="page-item" id="nextPage">
                                                     <a class="page-link" href="#" aria-label="Next">
                                                         <span aria-hidden="true">&raquo;</span>
@@ -436,11 +436,11 @@
     <script th:src="@{/js/core/notification.js}"></script>
     <script>console.log('notification loaded:', typeof notifications);</script>
     
-    <script th:src="@{/js/core/validation.js}"></script>
+    <script th:src="@{/js/core/validation.js?v=5}"></script>
     <script>console.log('validation loaded:', typeof validator);</script>
 
     <!-- Booking JavaScript -->
-    <script th:src="@{/js/booking/booking-controller.js?v=3}"></script>
+    <script th:src="@{/js/booking/booking-controller.js?v=5}"></script>
     <script>console.log('booking-controller loaded:', typeof BookingController);</script>
     
     <script>
