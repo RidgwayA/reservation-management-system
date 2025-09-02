@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout/base :: head}">
+    <title>Book Your Stay - RV Park</title>
+</head>
+<body>
+    <div th:replace="~{layout/base :: nav}"></div>
+    
+    <main class="container my-5">
+        <div class="row mb-5">
+            <div class="col-12 text-center">
+                <h1 class="display-4 text-success mb-3">
+                    <i class="bi bi-tree me-3"></i>RV Park
+                </h1>
+                <p class="lead text-muted">Experience nature in comfort with our premium campsites and ATV adventures</p>
+                <div class="row text-center mt-4">
+                    <div class="col-md-4">
+                        <div class="card border-success">
+                            <div class="card-body">
+                                <h5 class="card-title text-success">
+                                    <i class="bi bi-truck me-2"></i>75 RV Sites
+                                </h5>
+                                <p class="card-text">Full hookups with water & electric<br><strong>$40/night</strong></p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card border-success">
+                            <div class="card-body">
+                                <h5 class="card-title text-success">
+                                    <i class="bi bi-triangle me-2"></i>125 Tent Sites
+                                </h5>
+                                <p class="card-text">Perfect for outdoor enthusiasts<br><strong>$15/night</strong></p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card border-success">
+                            <div class="card-body">
+                                <h5 class="card-title text-success">
+                                    <i class="bi bi-geo-alt me-2"></i>ATV Park Access
+                                </h5>
+                                <p class="card-text">Adventure awaits!<br><strong>Passes at gate</strong></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="card shadow-lg">
+                    <div class="card-header bg-success text-white">
+                        <h3 class="mb-0">
+                            <i class="bi bi-calendar-check me-2"></i>Book Your Stay
+                        </h3>
+                    </div>
+                    <div class="card-body">
+                        <form id="bookingForm" class="needs-validation" novalidate>
+                            <div class="booking-step" id="step1">
+                                <h5 class="text-success mb-3">
+                                    <span class="badge bg-success me-2">1</span>Choose Your Dates & Site
+                                </h5>
+                                
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="startDate" class="form-label">Check-in Date</label>
+                                        <input type="date" class="form-control" id="startDate" name="startDate" required>
+                                        <div class="invalid-feedback">Please select a check-in date.</div>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="endDate" class="form-label">Check-out Date</label>
+                                        <input type="date" class="form-control" id="endDate" name="endDate" required>
+                                        <div class="invalid-feedback">Please select a check-out date.</div>
+                                    </div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Site Type</label>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="card site-type-card" data-site-type="FULL_HOOKUP">
+                                                <div class="card-body text-center">
+                                                    <input type="radio" name="siteType" value="FULL_HOOKUP" id="rvSite" class="form-check-input d-none">
+                                                    <i class="bi bi-truck display-4 text-success mb-2"></i>
+                                                    <h6>RV Site with Full Hookups</h6>
+                                                    <p class="text-muted mb-1">Water & Electric</p>
+                                                    <p class="fw-bold">$40/night</p>
+                                                    <small class="text-muted">Max 15 people</small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="card site-type-card" data-site-type="TENT">
+                                                <div class="card-body text-center">
+                                                    <input type="radio" name="siteType" value="TENT" id="tentSite" class="form-check-input d-none">
+                                                    <i class="bi bi-triangle display-4 text-success mb-2"></i>
+                                                    <h6>Tent Camping Site</h6>
+                                                    <p class="text-muted mb-1">Basic camping</p>
+                                                    <p class="fw-bold">$15/night</p>
+                                                    <small class="text-muted">Max 8 people</small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="invalid-feedback">Please select a site type.</div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-12">
+                                        <button type="button" class="btn btn-success btn-lg" onclick="window.BookingController.checkAvailability()">
+                                            <i class="bi bi-search me-2"></i>Check Availability
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="booking-step d-none" id="step2">
+                                <h5 class="text-success mb-3">
+                                    <span class="badge bg-success me-2">2</span>Choose Your Site
+                                </h5>
+                                
+                                <div class="row mb-4">
+                                    <div class="col-12">
+                                        <label class="form-label">Choose Location</label>
+                                        <div class="btn-group w-100" role="group" id="locationFilters">
+                                            <input type="radio" class="btn-check" name="locationFilter" id="allLocations" value="" checked>
+                                            <label class="btn btn-outline-success" for="allLocations">All Locations</label>
+                                            
+                                            <input type="radio" class="btn-check" name="locationFilter" id="woods" value="WOODS">
+                                            <label class="btn btn-outline-success" for="woods">Woods</label>
+                                            
+                                            <input type="radio" class="btn-check" name="locationFilter" id="atvPark" value="ATV_PARK">
+                                            <label class="btn btn-outline-success" for="atvPark">ATV Park</label>
+                                            
+                                            <input type="radio" class="btn-check" name="locationFilter" id="lake" value="LAKE">
+                                            <label class="btn btn-outline-success" for="lake">Lake</label>
+                                            
+                                            <input type="radio" class="btn-check" name="locationFilter" id="baseCamp" value="BASE_CAMP">
+                                            <label class="btn btn-outline-success" for="baseCamp">Base Camp</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div id="availableSites" class="row">
+                                </div>
+                                
+                                <div class="row mt-4" id="paginationControls" style="display: none;">
+                                    <div class="col-12 text-center">
+                                        <nav>
+                                            <ul class="pagination justify-content-center" id="pageNumbers">
+                                                <li class="page-item" id="prevPage">
+                                                    <a class="page-link" href="#" aria-label="Previous">
+                                                        <span aria-hidden="true">&laquo;</span>
+                                                    </a>
+                                                </li>
+                                                <li class="page-item" id="nextPage">
+                                                    <a class="page-link" href="#" aria-label="Next">
+                                                        <span aria-hidden="true">&raquo;</span>
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                        </nav>
+                                    </div>
+                                </div>
+                                <div class="mt-3">
+                                    <button type="button" class="btn btn-outline-secondary me-2" onclick="window.BookingController.goToStep(1)">
+                                        <i class="bi bi-arrow-left me-2"></i>Back
+                                    </button>
+                                    <button type="button" class="btn btn-success" onclick="window.BookingController.goToStep(3)" disabled id="continueToStep3">
+                                        Continue <i class="bi bi-arrow-right ms-2"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="booking-step d-none" id="step3">
+                                <h5 class="text-success mb-3">
+                                    <span class="badge bg-success me-2">3</span>Your Information
+                                </h5>
+                                
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="firstName" class="form-label">First Name *</label>
+                                        <input type="text" class="form-control" id="firstName" name="firstName" required>
+                                        <div class="invalid-feedback">Please provide your first name.</div>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="lastName" class="form-label">Last Name *</label>
+                                        <input type="text" class="form-control" id="lastName" name="lastName" required>
+                                        <div class="invalid-feedback">Please provide your last name.</div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="email" class="form-label">Email Address *</label>
+                                        <input type="email" class="form-control" id="email" name="email" required>
+                                        <div class="invalid-feedback">Please provide a valid email address.</div>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="phone" class="form-label">Phone Number *</label>
+                                        <input type="tel" class="form-control" id="phone" name="phone" required>
+                                        <div class="invalid-feedback">Please provide a phone number.</div>
+                                    </div>
+                                </div>
+
+                                <h6 class="text-success mb-3 mt-4">Emergency Contact</h6>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="emergencyName" class="form-label">Emergency Contact Name *</label>
+                                        <input type="text" class="form-control" id="emergencyName" name="emergencyName" required>
+                                        <div class="invalid-feedback">Please provide an emergency contact name.</div>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="emergencyRelationship" class="form-label">Relationship</label>
+                                        <input type="text" class="form-control" id="emergencyRelationship" name="emergencyRelationship" placeholder="e.g., Spouse, Parent">
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="emergencyPhone" class="form-label">Emergency Contact Phone *</label>
+                                    <input type="tel" class="form-control" id="emergencyPhone" name="emergencyPhone" required>
+                                    <div class="invalid-feedback">Please provide an emergency contact phone number.</div>
+                                </div>
+
+                                <div class="mt-3">
+                                    <button type="button" class="btn btn-outline-secondary me-2" onclick="window.BookingController.goToStep(2)">
+                                        <i class="bi bi-arrow-left me-2"></i>Back
+                                    </button>
+                                    <button type="button" class="btn btn-success" onclick="window.BookingController.goToStep(4)">
+                                        Continue <i class="bi bi-arrow-right ms-2"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="booking-step d-none" id="step4">
+                                <h5 class="text-success mb-3">
+                                    <span class="badge bg-success me-2">4</span>Party & Vehicle Details
+                                </h5>
+
+                                <h6 class="text-success mb-3">Party Information</h6>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="partySize" class="form-label">Party Size *</label>
+                                        <input type="number" class="form-control" id="partySize" name="partySize" min="1" max="15" required>
+                                        <div class="form-text">Maximum varies by site type</div>
+                                        <div class="invalid-feedback">Please specify party size.</div>
+                                    </div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="partyMembers" class="form-label">Party Members (one per line)</label>
+                                    <textarea class="form-control" id="partyMembers" name="partyMembers" rows="4" 
+                                              placeholder="John Doe&#10;Jane Doe&#10;Billy Doe"></textarea>
+                                    <div class="form-text">List all party members for liability purposes</div>
+                                </div>
+
+                                <h6 class="text-success mb-3 mt-4">Vehicle Information</h6>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="licensePlate" class="form-label">License Plate *</label>
+                                        <input type="text" class="form-control" id="licensePlate" name="licensePlate" required>
+                                        <div class="invalid-feedback">Please provide your license plate number.</div>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="vehicleMake" class="form-label">Vehicle Make</label>
+                                        <input type="text" class="form-control" id="vehicleMake" name="vehicleMake" placeholder="e.g., Ford">
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="vehicleModel" class="form-label">Vehicle Model</label>
+                                        <input type="text" class="form-control" id="vehicleModel" name="vehicleModel" placeholder="e.g., F-350">
+                                    </div>
+                                    <div class="col-md-6 mb-3" id="rvLengthGroup" style="display: none;">
+                                        <label for="rvLength" class="form-label">RV Length (feet)</label>
+                                        <input type="number" class="form-control" id="rvLength" name="rvLength" min="10" max="100">
+                                        <div class="invalid-feedback">RV length must be between 10 and 100 feet.</div>
+                                    </div>
+                                </div>
+
+                                <div class="mt-3">
+                                    <button type="button" class="btn btn-outline-secondary me-2" onclick="window.BookingController.goToStep(3)">
+                                        <i class="bi bi-arrow-left me-2"></i>Back
+                                    </button>
+                                    <button type="button" class="btn btn-success" onclick="window.BookingController.goToStep(5)">
+                                        Continue <i class="bi bi-arrow-right ms-2"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="booking-step d-none" id="step5">
+                                <h5 class="text-success mb-3">
+                                    <span class="badge bg-success me-2">5</span>ATV Passes & Review
+                                </h5>
+
+                                <div class="alert alert-info">
+                                    <h6><i class="bi bi-info-circle me-2"></i>ATV Park Access</h6>
+                                    <p class="mb-2">ATV passes are required for park access and must be purchased at the gate:</p>
+                                    <ul class="mb-0">
+                                        <li><strong>Adults (18+):</strong> $20 per day</li>
+                                        <li><strong>Teens (15-17):</strong> $10 per day</li>
+                                        <li><strong>Children (under 15):</strong> FREE</li>
+                                    </ul>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Will you need ATV passes? (Optional - can purchase at gate)</label>
+                                    <div id="atvPassContainer">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="needAtvPasses" name="needAtvPasses">
+                                            <label class="form-check-label" for="needAtvPasses">
+                                                Yes, we plan to use the ATV park
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div id="atvPassDetails" class="d-none">
+                                    <div class="row">
+                                        <div class="col-md-4 mb-3">
+                                            <label for="atvAdults" class="form-label">Adults (18+)</label>
+                                            <input type="number" class="form-control" id="atvAdults" name="atvAdults" min="0" value="0">
+                                        </div>
+                                        <div class="col-md-4 mb-3">
+                                            <label for="atvTeens" class="form-label">Teens (15-17)</label>
+                                            <input type="number" class="form-control" id="atvTeens" name="atvTeens" min="0" value="0">
+                                        </div>
+                                        <div class="col-md-4 mb-3">
+                                            <label for="atvChildren" class="form-label">Children (Under 15)</label>
+                                            <input type="number" class="form-control" id="atvChildren" name="atvChildren" min="0" value="0">
+                                            <div class="form-text">Free passes</div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="card bg-light mt-4">
+                                    <div class="card-header">
+                                        <h6 class="mb-0">Booking Summary</h6>
+                                    </div>
+                                    <div class="card-body" id="bookingSummary">
+                                    </div>
+                                </div>
+
+                                <div class="mt-4">
+                                    <div class="form-check mb-3">
+                                        <input class="form-check-input" type="checkbox" id="agreeTerms" name="agreeTerms" required>
+                                        <label class="form-check-label" for="agreeTerms">
+                                            I agree to the <a href="#" data-bs-toggle="modal" data-bs-target="#termsModal">terms and conditions</a> and understand that a 25% deposit is required to secure this reservation.
+                                        </label>
+                                        <div class="invalid-feedback">Please agree to the terms and conditions.</div>
+                                    </div>
+
+                                    <div class="mt-3">
+                                        <button type="button" class="btn btn-outline-secondary me-2" onclick="window.BookingController.goToStep(4)">
+                                            <i class="bi bi-arrow-left me-2"></i>Back
+                                        </button>
+                                        <button type="submit" class="btn btn-success btn-lg">
+                                            <i class="bi bi-credit-card me-2"></i>Complete Booking
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div class="modal fade" id="termsModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Terms and Conditions</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <h6>Reservation Policy</h6>
+                    <ul>
+                        <li>25% deposit required to secure reservation</li>
+                        <li>Check-in: 1:00 PM | Check-out: 11:00 AM</li>
+                        <li>Early check-in available if site is ready</li>
+                        <li>Same-day bookings accepted subject to availability</li>
+                    </ul>
+                    
+                    <h6>Cancellation Policy</h6>
+                    <ul>
+                        <li><strong>14+ days notice:</strong> Full refund</li>
+                        <li><strong>7-13 days notice:</strong> 50% refund</li>
+                        <li><strong>Less than 7 days:</strong> No refund</li>
+                    </ul>
+
+                    <h6>ATV Park Access</h6>
+                    <ul>
+                        <li>Separate passes required for ATV park access</li>
+                        <li>Passes must be purchased at gate house</li>
+                        <li>Physical wristbands provided upon arrival</li>
+                        <li>Liability waivers required for all participants</li>
+                    </ul>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div th:replace="~{layout/base :: footer}"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script th:src="@{/js/core/api-service.js}"></script>
+    <script>console.log('api-service loaded:', typeof api);</script>
+    
+    <script th:src="@{/js/core/notification.js}"></script>
+    <script>console.log('notification loaded:', typeof notifications);</script>
+    
+    <script th:src="@{/js/core/validation.js?v=5}"></script>
+    <script>console.log('validation loaded:', typeof validator);</script>
+
+    <script th:src="@{/js/booking/booking-controller.js?v=5}"></script>
+    <script>console.log('booking-controller loaded:', typeof BookingController);</script>
+    
+    <script>
+        // Initialize booking form
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM loaded');
+            console.log('BookingController:', typeof BookingController);
+            console.log('api:', typeof api);
+            console.log('notifications:', typeof notifications);
+            
+            if (typeof window.BookingController !== 'undefined' && window.BookingController.init) {
+                window.BookingController.init();
+                console.log('BookingController initialized');
+            } else {
+                console.error('BookingController not found or init method missing');
+            }
+        });
+    </script>
+</body>
+</html>

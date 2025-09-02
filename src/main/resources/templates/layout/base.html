@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title th:text="${title} ?: 'RV Park Reservations'">
+      RV Park Reservations
+    </title>
+
+   
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css"
+      rel="stylesheet"
+    />
+
+    
+    <link th:href="@{/css/app.css}" rel="stylesheet" />
+
+    
+    <th:block th:fragment="styles"></th:block>
+  </head>
+  <body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-success">
+      <div class="container">
+        <a class="navbar-brand fw-bold" th:href="@{/}">
+          <i class="bi bi-tree me-2"></i>RV Park
+        </a>
+
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarNav"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav me-auto">
+            <li class="nav-item">
+              <a
+                class="nav-link"
+                th:href="@{/}"
+                th:classappend="${request != null and request.requestURI == '/' ? 'active' : ''}"
+              >
+                <i class="bi bi-house me-1"></i>Book Now
+              </a>
+            </li>
+            <li class="nav-item">
+              <a
+                class="nav-link"
+                th:href="@{/staff}"
+                th:classappend="${request != null and #strings.startsWith(request.requestURI, '/staff') ? 'active' : ''}"
+              >
+                <i class="bi bi-gear me-1"></i>Staff Dashboard
+              </a>
+            </li>
+          </ul>
+
+          <ul class="navbar-nav">
+            <li class="nav-item">
+              <a
+                class="nav-link"
+                th:href="@{/reservations/lookup}"
+                th:classappend="${request != null and #strings.startsWith(request.requestURI, '/reservations') ? 'active' : ''}"
+              >
+                <i class="bi bi-search me-1"></i>Find Reservation
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="flex-grow-1">
+      <!-- Alert Messages -->
+      <div th:if="${message}" class="container mt-3">
+        <div
+          th:class="'alert alert-' + (${messageType} ?: 'info') + ' alert-dismissible fade show'"
+          role="alert"
+        >
+          <span th:text="${message}"></span>
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="alert"
+          ></button>
+        </div>
+      </div>
+
+      <!-- Page Content -->
+      <div th:replace="${content}">
+        <div class="container mt-4">
+          <h1>Content goes here</h1>
+        </div>
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-light py-4 mt-5">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-6">
+            <h5><i class="bi bi-tree me-2"></i>RV Park</h5>
+            <p class="mb-1">200 Premium Campsites + ATV Park</p>
+            <p class="mb-0">Experience nature in comfort</p>
+          </div>
+          <div class="col-md-6 text-md-end">
+            <p class="mb-1">Check-in: 1:00 PM | Check-out: 11:00 AM</p>
+            <p class="mb-0">
+              <i class="bi bi-telephone me-1"></i>(555) 123-CAMP
+              <span class="mx-2">|</span>
+              <i class="bi bi-envelope me-1"></i>info@rvpark.com
+            </p>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+   
+    <script th:src="@{/js/core/api-service.js}"></script>
+    <script th:src="@{/js/core/notification.js}"></script>
+    <script th:src="@{/js/core/validation.js}"></script>
+
+   
+    <th:block th:fragment="scripts"></th:block>
+  </body>
+</html>
