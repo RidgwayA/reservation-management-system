@@ -4,6 +4,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
+import jakarta.servlet.http.HttpSession;
+
 @Controller
 public class ViewController {
     
@@ -15,9 +17,15 @@ public class ViewController {
     }
     
     @GetMapping("/staff")
-    public String staffDashboard(Model model) {
+    public String staffDashboard(HttpSession session, Model model) {
+        // Check if user is authenticated
+        if (!AuthController.isAuthenticated(session)) {
+            return "redirect:/staff/login";
+        }
+        
         model.addAttribute("title", "Staff Dashboard - Pine Ridge RV Park");
         model.addAttribute("content", "staff/dashboard");
+        model.addAttribute("staffUsername", session.getAttribute("staffUsername"));
         return "staff/dashboard";
     }
     
