@@ -40,6 +40,9 @@ services:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/reservation_system
       - SPRING_DATASOURCE_USERNAME=rvpark
       - SPRING_DATASOURCE_PASSWORD=rvpark123
+      - MAIL_USERNAME=${MAIL_USERNAME}
+      - MAIL_PASSWORD=${MAIL_PASSWORD}
+      - PARK_EMAIL=${PARK_EMAIL:-noreply@alpineridgervpark.com}
     depends_on:
       postgres:
         condition: service_healthy
