@@ -96,11 +96,11 @@ public class AtvPass extends BaseEntity {
     // Private method for pricing logic
     private static Money calculateDailyRate(Integer age) {
         if (age < 15) {
-            return Money.of(BigDecimal.ZERO); // Free for children
+            return Money.of(BigDecimal.ZERO);
         } else if (age >= 15 && age <= 17) {
-            return Money.of(new BigDecimal("10.00")); // $10 for teens
+            return Money.of(new BigDecimal("10.00"));
         } else {
-            return Money.of(new BigDecimal("20.00")); // $20 for adults
+            return Money.of(new BigDecimal("20.00"));
         }
     }
 }

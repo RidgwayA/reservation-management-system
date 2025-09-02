@@ -128,35 +128,20 @@ public class ReservationController {
     @Transactional
     public ResponseEntity<ReservationDto> createReservation(@RequestBody ReservationDto reservationDto) {
         try {
-            System.out.println("DEBUG: Received reservation request: " + reservationDto);
-            
             Reservation reservation = convertFromDto(reservationDto);
-            System.out.println("DEBUG: Converted to entity: " + reservation);
-            
-            // Generate confirmation number
             String confirmationNumber = generateConfirmationNumber();
-            System.out.println("DEBUG: Generated confirmation number: " + confirmationNumber);
             reservation.confirm(confirmationNumber);
             
             Reservation saved = reservationRepository.save(reservation);
-            System.out.println("DEBUG: Saved reservation with ID: " + saved.getId());
             
-            // Send confirmation email asynchronously (don't let email failure break booking)
             try {
                 emailService.sendConfirmationEmail(saved);
-                System.out.println("DEBUG: Confirmation email triggered for: " + saved.getConfirmationNumber());
             } catch (Exception e) {
-                System.err.println("WARNING: Failed to send confirmation email for " + saved.getConfirmationNumber() + ": " + e.getMessage());
-                // Continue - email failure shouldn't break the booking process
+                // Email failure shouldn't break the booking process
             }
             
-            ReservationDto result = convertToDto(saved);
-            System.out.println("DEBUG: Returning DTO: " + result);
-            
-            return ResponseEntity.ok(result);
+            return ResponseEntity.ok(convertToDto(saved));
         } catch (Exception e) {
-            System.err.println("ERROR: Failed to create reservation: " + e.getMessage());
-            e.printStackTrace();
             return ResponseEntity.badRequest().build();
         }
     }
@@ -208,7 +193,6 @@ public class ReservationController {
             dto.setPaidAmount(reservation.getPaidAmount().getAmount());
         }
         
-        // Populate Customer DTO
         if (reservation.getCustomer() != null) {
             CustomerDto customerDto = new CustomerDto();
             customerDto.setId(reservation.getCustomer().getId());
@@ -231,7 +215,6 @@ public class ReservationController {
             dto.setCustomer(customerDto);
         }
         
-        // Populate Campsite DTO
         if (reservation.getCampsite() != null) {
             CampsiteDto campsiteDto = new CampsiteDto();
             campsiteDto.setId(reservation.getCampsite().getId());
@@ -250,14 +233,11 @@ public class ReservationController {
     
     private Reservation convertFromDto(ReservationDto dto) {
         Reservation reservation = new Reservation();
-        
-        // Handle customer - either find existing or create new
         Customer customer;
         if (dto.getCustomer() != null && dto.getCustomer().getId() != null) {
             customer = customerRepository.findById(dto.getCustomer().getId())
                 .orElseThrow(() -> new IllegalArgumentException("Customer not found"));
         } else if (dto.getCustomer() != null) {
-            // Create new customer
             customer = new Customer();
             customer.setFirstName(dto.getCustomer().getFirstName());
             customer.setLastName(dto.getCustomer().getLastName());
@@ -287,8 +267,6 @@ public class ReservationController {
         }
         
         reservation.setCustomer(customer);
-        
-        // Handle campsite
         if (dto.getCampsite() != null && dto.getCampsite().getId() != null) {
             Campsite campsite = campsiteRepository.findById(dto.getCampsite().getId())
                 .orElseThrow(() -> new IllegalArgumentException("Campsite not found"));
@@ -296,14 +274,12 @@ public class ReservationController {
         } else {
             throw new IllegalArgumentException("Campsite information is required");
         }
-        
-        // Set basic fields
         if (dto.getStartDate() != null && dto.getEndDate() != null) {
             DateTimeRange stayPeriod = new DateTimeRange(
                 dto.getStartDate(),
                 dto.getEndDate(),
-                java.time.LocalTime.of(15, 0), // 3 PM check-in
-                java.time.LocalTime.of(11, 0)   // 11 AM check-out
+                java.time.LocalTime.of(15, 0),
+                java.time.LocalTime.of(11, 0)
             );
             reservation.setStayPeriod(stayPeriod);
         }
@@ -312,8 +288,6 @@ public class ReservationController {
         reservation.setPartyMembers(dto.getPartyMembers());
         reservation.setPartySize(dto.getPartySize());
         reservation.setNotes(dto.getNotes());
-        
-        // Handle vehicle info
         if (dto.getVehicleLicensePlate() != null || dto.getVehicleMake() != null || 
             dto.getVehicleModel() != null || dto.getRvLengthFeet() != null) {
             VehicleInfo vehicleInfo = new VehicleInfo(
@@ -324,8 +298,6 @@ public class ReservationController {
             );
             reservation.setVehicleInfo(vehicleInfo);
         }
-        
-        // Handle money amounts
         if (dto.getCampsiteTotal() != null) {
             reservation.setCampsiteTotal(new Money(dto.getCampsiteTotal(), "USD"));
         }
@@ -343,9 +315,8 @@ public class ReservationController {
     }
     
     private String generateConfirmationNumber() {
-        // Generate a unique confirmation number with format: RV + current timestamp + random 3 digits
         long timestamp = System.currentTimeMillis();
-        int random = (int) (Math.random() * 900) + 100; // 3-digit random number (100-999)
+        int random = (int) (Math.random() * 900) + 100;
         return "RV" + timestamp + random;
     }
 }

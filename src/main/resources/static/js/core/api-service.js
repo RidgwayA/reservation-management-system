@@ -1,4 +1,3 @@
-// API Service Layer - Single Responsibility: Handle all API communication
 class ApiService {
     constructor() {
         this.baseUrl = '/api';
@@ -8,7 +7,6 @@ class ApiService {
         };
     }
 
-    // Generic HTTP methods
     async request(method, url, data = null) {
         const config = {
             method,
@@ -26,7 +24,6 @@ class ApiService {
                 throw new Error(`HTTP ${response.status}: ${response.statusText}`);
             }
             
-            // Handle empty responses (like DELETE operations)
             if (response.status === 204 || response.headers.get('content-length') === '0') {
                 return null;
             }
@@ -38,7 +35,6 @@ class ApiService {
         }
     }
 
-    // Customer API methods
     customers = {
         getAll: () => this.request('GET', '/customers'),
         getById: (id) => this.request('GET', `/customers/${id}`),
@@ -48,7 +44,6 @@ class ApiService {
         delete: (id) => this.request('DELETE', `/customers/${id}`)
     };
 
-    // Campsite API methods
     campsites = {
         getAll: () => this.request('GET', '/campsites'),
         getById: (id) => this.request('GET', `/campsites/${id}`),
@@ -64,7 +59,6 @@ class ApiService {
         markAsAvailable: (id) => this.request('PUT', `/campsites/${id}/available`)
     };
 
-    // Reservation API methods
     reservations = {
         getAll: () => this.request('GET', '/reservations'),
         getById: (id) => this.request('GET', `/reservations/${id}`),
@@ -80,7 +74,6 @@ class ApiService {
         cancel: (id) => this.request('PUT', `/reservations/${id}/cancel`)
     };
 
-    // Date utility methods
     formatDate(date) {
         if (date instanceof Date) {
             return date.toISOString().split('T')[0];
@@ -93,5 +86,4 @@ class ApiService {
     }
 }
 
-// Create global instance
 window.api = new ApiService();

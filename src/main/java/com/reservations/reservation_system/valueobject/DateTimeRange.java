@@ -31,7 +31,6 @@ public class DateTimeRange {
     @Column(name = "end_time")
     private LocalTime endTime;
     
-    // Factory methods for common use cases
     public static DateTimeRange of(LocalDate startDate, LocalDate endDate) {
         return new DateTimeRange(startDate, endDate, null, null);
     }
@@ -52,7 +51,6 @@ public class DateTimeRange {
         return new DateTimeRange(startDate, endDate, null, null);
     }
     
-    // Business logic methods
     public boolean isAllDay() {
         return startTime == null && endTime == null;
     }
@@ -94,7 +92,7 @@ public class DateTimeRange {
     
     public boolean overlapsWithTime(DateTimeRange other) {
         if (other == null || isAllDay() || other.isAllDay()) {
-            return false; // All-day reservations don't have time conflicts
+            return false; 
         }
         
         if (this.startTime == null || this.endTime == null || 
@@ -113,31 +111,26 @@ public class DateTimeRange {
         LocalDate date = dateTime.toLocalDate();
         LocalTime time = dateTime.toLocalTime();
         
-        // Check date range
         if (!date.equals(startDate) && (endDate == null || date.isAfter(endDate) || date.isBefore(startDate))) {
             return false;
         }
         
-        // If all day, any time on valid dates is acceptable
         if (isAllDay()) {
             return true;
         }
         
-        // Check time range
         if (startTime == null || endTime == null) {
-            return true; // No time restrictions
+            return true; 
         }
         
         return !time.isBefore(startTime) && !time.isAfter(endTime);
     }
     
     public boolean isValid() {
-        // Check date validity
         if (endDate != null && endDate.isBefore(startDate)) {
             return false;
         }
         
-        // Check time validity
         if (startTime != null && endTime != null && endTime.isBefore(startTime)) {
             return false;
         }

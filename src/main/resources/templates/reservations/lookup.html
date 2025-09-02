@@ -67,7 +67,6 @@
                         </h4>
                     </div>
                     <div class="card-body" id="reservationDetails">
-                        <!-- Reservation details will be populated here -->
                     </div>
                 </div>
             </div>
@@ -96,7 +95,6 @@
                                     </tr>
                                 </thead>
                                 <tbody id="multipleResultsBody">
-                                    <!-- Multiple results will be populated here -->
                                 </tbody>
                             </table>
                         </div>
@@ -146,10 +144,10 @@
 
     <div th:replace="~{layout/base :: footer}"></div>
 
-    <!-- Bootstrap JS -->
+    
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
-    <!-- Core JavaScript -->
+    
     <script th:src="@{/js/core/api-service.js}"></script>
     <script th:src="@{/js/core/notification.js}"></script>
     <script th:src="@{/js/core/validation.js}"></script>
@@ -401,12 +399,10 @@
             }
 
             showNoResults() {
-                // Could show a "no results" message here
                 this.hideResults();
             }
         }
 
-        // Initialize lookup when page loads
         document.addEventListener('DOMContentLoaded', function() {
             window.reservationLookup = new ReservationLookup();
         });

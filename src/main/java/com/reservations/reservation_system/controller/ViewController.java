@@ -18,7 +18,7 @@ public class ViewController {
     
     @GetMapping("/staff")
     public String staffDashboard(HttpSession session, Model model) {
-        // Check if user is authenticated
+
         if (!AuthController.isAuthenticated(session)) {
             return "redirect:/staff/login";
         }

@@ -1,4 +1,3 @@
-// Notification Service - Single Responsibility: Handle user notifications
 class NotificationService {
     constructor() {
         this.container = this.createContainer();
@@ -28,7 +27,6 @@ class NotificationService {
         
         this.container.insertAdjacentHTML('beforeend', alertHtml);
         
-        // Auto-remove after duration
         if (duration > 0) {
             setTimeout(() => {
                 const alert = document.getElementById(alertId);
@@ -66,11 +64,9 @@ class NotificationService {
         return icons[type] || 'info-circle';
     }
 
-    // Clear all notifications
     clearAll() {
         this.container.innerHTML = '';
     }
 }
 
-// Create global instance
 window.notifications = new NotificationService();

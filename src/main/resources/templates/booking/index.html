@@ -7,7 +7,6 @@
     <div th:replace="~{layout/base :: nav}"></div>
     
     <main class="container my-5">
-        <!-- Hero Section -->
         <div class="row mb-5">
             <div class="col-12 text-center">
                 <h1 class="display-4 text-success mb-3">
@@ -49,7 +48,6 @@
             </div>
         </div>
 
-        <!-- Booking Form -->
         <div class="row justify-content-center">
             <div class="col-lg-8">
                 <div class="card shadow-lg">
@@ -60,7 +58,6 @@
                     </div>
                     <div class="card-body">
                         <form id="bookingForm" class="needs-validation" novalidate>
-                            <!-- Step 1: Dates and Site Type -->
                             <div class="booking-step" id="step1">
                                 <h5 class="text-success mb-3">
                                     <span class="badge bg-success me-2">1</span>Choose Your Dates & Site
@@ -119,13 +116,11 @@
                                 </div>
                             </div>
 
-                            <!-- Step 2: Available Sites -->
                             <div class="booking-step d-none" id="step2">
                                 <h5 class="text-success mb-3">
                                     <span class="badge bg-success me-2">2</span>Choose Your Site
                                 </h5>
                                 
-                                <!-- Location Filter -->
                                 <div class="row mb-4">
                                     <div class="col-12">
                                         <label class="form-label">Choose Location</label>
@@ -149,10 +144,8 @@
                                 </div>
                                 
                                 <div id="availableSites" class="row">
-                                    <!-- Available sites will be populated here -->
                                 </div>
                                 
-                                <!-- Pagination Controls -->
                                 <div class="row mt-4" id="paginationControls" style="display: none;">
                                     <div class="col-12 text-center">
                                         <nav>
@@ -162,7 +155,6 @@
                                                         <span aria-hidden="true">&laquo;</span>
                                                     </a>
                                                 </li>
-                                                <!-- Page numbers will be inserted here -->
                                                 <li class="page-item" id="nextPage">
                                                     <a class="page-link" href="#" aria-label="Next">
                                                         <span aria-hidden="true">&raquo;</span>
@@ -182,7 +174,6 @@
                                 </div>
                             </div>
 
-                            <!-- Step 3: Customer Information -->
                             <div class="booking-step d-none" id="step3">
                                 <h5 class="text-success mb-3">
                                     <span class="badge bg-success me-2">3</span>Your Information
@@ -214,7 +205,6 @@
                                     </div>
                                 </div>
 
-                                <!-- Emergency Contact -->
                                 <h6 class="text-success mb-3 mt-4">Emergency Contact</h6>
                                 <div class="row">
                                     <div class="col-md-6 mb-3">
@@ -243,13 +233,11 @@
                                 </div>
                             </div>
 
-                            <!-- Step 4: Party & Vehicle Details -->
                             <div class="booking-step d-none" id="step4">
                                 <h5 class="text-success mb-3">
                                     <span class="badge bg-success me-2">4</span>Party & Vehicle Details
                                 </h5>
 
-                                <!-- Party Information -->
                                 <h6 class="text-success mb-3">Party Information</h6>
                                 <div class="row">
                                     <div class="col-md-6 mb-3">
@@ -267,7 +255,6 @@
                                     <div class="form-text">List all party members for liability purposes</div>
                                 </div>
 
-                                <!-- Vehicle Information -->
                                 <h6 class="text-success mb-3 mt-4">Vehicle Information</h6>
                                 <div class="row">
                                     <div class="col-md-6 mb-3">
@@ -302,13 +289,11 @@
                                 </div>
                             </div>
 
-                            <!-- Step 5: ATV Passes & Summary -->
                             <div class="booking-step d-none" id="step5">
                                 <h5 class="text-success mb-3">
                                     <span class="badge bg-success me-2">5</span>ATV Passes & Review
                                 </h5>
 
-                                <!-- ATV Pass Information -->
                                 <div class="alert alert-info">
                                     <h6><i class="bi bi-info-circle me-2"></i>ATV Park Access</h6>
                                     <p class="mb-2">ATV passes are required for park access and must be purchased at the gate:</p>
@@ -349,13 +334,11 @@
                                     </div>
                                 </div>
 
-                                <!-- Booking Summary -->
                                 <div class="card bg-light mt-4">
                                     <div class="card-header">
                                         <h6 class="mb-0">Booking Summary</h6>
                                     </div>
                                     <div class="card-body" id="bookingSummary">
-                                        <!-- Summary will be populated by JavaScript -->
                                     </div>
                                 </div>
 
@@ -385,7 +368,6 @@
         </div>
     </main>
 
-    <!-- Terms Modal -->
     <div class="modal fade" id="termsModal" tabindex="-1">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
@@ -426,10 +408,8 @@
 
     <div th:replace="~{layout/base :: footer}"></div>
 
-    <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
-    <!-- Core JavaScript -->
     <script th:src="@{/js/core/api-service.js}"></script>
     <script>console.log('api-service loaded:', typeof api);</script>
     
@@ -439,7 +419,6 @@
     <script th:src="@{/js/core/validation.js?v=5}"></script>
     <script>console.log('validation loaded:', typeof validator);</script>
 
-    <!-- Booking JavaScript -->
     <script th:src="@{/js/booking/booking-controller.js?v=5}"></script>
     <script>console.log('booking-controller loaded:', typeof BookingController);</script>
     

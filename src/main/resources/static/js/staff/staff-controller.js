@@ -1,4 +1,3 @@
-// Staff Controller - Single Responsibility: Handle staff dashboard operations
 class StaffController {
     constructor() {
         this.reservations = [];
@@ -14,7 +13,6 @@ class StaffController {
             console.log('Data loaded - reservations:', this.reservations.length, 'campsites:', this.campsites.length);
             this.updateStats();
             this.setupEventListeners();
-            // Auto-populate the default active tab (check-ins)
             this.populateCheckinsTable();
             console.log('StaffController initialization complete');
         } catch (error) {
@@ -26,7 +24,6 @@ class StaffController {
     setupEventListeners() {
         console.log('Setting up event listeners...');
         
-        // Tab change events
         const tabs = document.querySelectorAll('[data-bs-toggle="tab"]');
         console.log('Found tabs:', tabs.length);
         
@@ -39,7 +36,6 @@ class StaffController {
             });
         });
 
-        // Set default filter date to today
         document.getElementById('filterDate').value = new Date().toISOString().split('T')[0];
     }
 
@@ -47,7 +43,6 @@ class StaffController {
         try {
             const today = new Date().toISOString().split('T')[0];
             
-            // Load all data in parallel
             const [reservations, campsites, checkins, checkouts, availableSites] = await Promise.all([
                 api.reservations.getAll(),
                 api.campsites.getAll(),
@@ -64,7 +59,6 @@ class StaffController {
 
         } catch (error) {
             console.error('Error loading dashboard data:', error);
-            // Set empty arrays as fallback
             this.reservations = [];
             this.campsites = [];
             this.checkins = [];
@@ -74,11 +68,9 @@ class StaffController {
     }
 
     updateStats() {
-        // Update stat cards
         document.getElementById('todaysCheckIns').textContent = this.checkins.length;
         document.getElementById('todaysCheckOuts').textContent = this.checkouts.length;
         
-        // Update available sites with count only
         const availableSitesCount = this.availableSites.length;
         document.getElementById('availableSitesCount').textContent = availableSitesCount;
     }
@@ -244,7 +236,6 @@ class StaffController {
         }
 
         tbody.innerHTML = this.campsites.map(site => {
-            // Determine actual status based on reservations
             const actualStatus = this.getSiteActualStatus(site);
             
             return `
@@ -295,24 +286,20 @@ class StaffController {
     }
 
     getSiteActualStatus(site) {
-        // First check if site has static maintenance status
         if (site.status === 'MAINTENANCE' || site.status === 'OUT_OF_ORDER') {
             return site.status;
         }
 
-        // Check if site has active reservations today
         const today = new Date().toISOString().split('T')[0];
         console.log(`Checking site ${site.siteNumber}, today is ${today}`);
         
         const siteReservations = this.reservations.filter(reservation => {
             if (reservation.campsite && reservation.campsite.id === site.id) {
                 console.log(`Found reservation for site ${site.siteNumber}: status=${reservation.status}, start=${reservation.startDate}, end=${reservation.endDate}`);
-                // Check if reservation is active (CONFIRMED or CHECKED_IN) and overlaps with today
                 if (['CONFIRMED', 'CHECKED_IN'].includes(reservation.status)) {
                     const startDate = reservation.startDate;
                     const endDate = reservation.endDate;
                     
-                    // Check if today falls within the reservation period
                     const overlaps = startDate <= today && endDate >= today;
                     console.log(`  Date overlap check: ${startDate} <= ${today} <= ${endDate} = ${overlaps}`);
                     return overlaps;
@@ -324,12 +311,10 @@ class StaffController {
         console.log(`Site ${site.siteNumber} has ${siteReservations.length} active reservations`);
 
         if (siteReservations.length > 0) {
-            // If there's a checked-in reservation, site is occupied
             if (siteReservations.some(r => r.status === 'CHECKED_IN')) {
                 console.log(`Site ${site.siteNumber} is OCCUPIED`);
                 return 'OCCUPIED';
             }
-            // If there's a confirmed reservation, site is reserved
             if (siteReservations.some(r => r.status === 'CONFIRMED')) {
                 console.log(`Site ${site.siteNumber} is RESERVED`);
                 return 'RESERVED';
@@ -351,7 +336,6 @@ class StaffController {
         return colors[status] || 'secondary';
     }
 
-    // Action methods
     async checkInReservation(reservationId) {
         try {
             await api.reservations.checkIn(reservationId);
@@ -421,7 +405,6 @@ class StaffController {
             return;
         }
 
-        // Create a simple modal or alert with reservation details
         const details = `
 Confirmation: ${reservation.confirmationNumber || 'N/A'}
 Guest: ${reservation.customer ? reservation.customer.fullName : 'N/A'}
@@ -435,7 +418,6 @@ Status: ${reservation.status}
         alert('Reservation Details:\n\n' + details);
     }
 
-    // Refresh methods
     async refreshCheckIns() {
         try {
             this.checkins = await api.reservations.getTodaysCheckIns();
@@ -464,14 +446,12 @@ Status: ${reservation.status}
         await this.loadDashboardData();
         this.updateStats();
         
-        // Refresh current active tab
         const activeTab = document.querySelector('[data-bs-toggle="tab"].active');
         if (activeTab) {
             this.onTabChange(activeTab.getAttribute('data-bs-target'));
         }
     }
 
-    // Filter methods
     async filterReservations() {
         const filterDate = document.getElementById('filterDate').value;
         if (!filterDate) {
@@ -484,7 +464,7 @@ Status: ${reservation.status}
             const originalReservations = this.reservations;
             this.reservations = filtered;
             this.populateReservationsTable();
-            this.reservations = originalReservations; // Restore original data
+            this.reservations = originalReservations;
             
             window.notifications.info(`Showing reservations for ${filterDate}`);
         } catch (error) {
@@ -504,13 +484,12 @@ Status: ${reservation.status}
         const originalSites = this.campsites;
         this.campsites = filteredSites;
         this.populateSitesTable();
-        this.campsites = originalSites; // Restore original data
+        this.campsites = originalSites;
         
         window.notifications.info(`Showing ${siteTypeFilter ? siteTypeFilter.replace('_', ' ').toLowerCase() : 'all'} sites`);
     }
 }
 
-// Create global instance
 console.log('Creating StaffController instance...');
 window.StaffController = new StaffController();
 console.log('StaffController instance created:', window.StaffController);

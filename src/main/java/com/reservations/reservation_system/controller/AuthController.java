@@ -19,7 +19,6 @@ public class AuthController {
     
     @GetMapping("/login")
     public String loginPage(HttpSession session, Model model) {
-        // If already logged in, redirect to dashboard
         if (isAuthenticated(session)) {
             return "redirect:/staff";
         }
@@ -33,16 +32,11 @@ public class AuthController {
                        RedirectAttributes redirectAttributes,
                        Model model) {
         
-        // Simple credential check for MVP demo
         if (DEMO_USERNAME.equals(username) && DEMO_PASSWORD.equals(password)) {
-            // Set session attribute
             session.setAttribute("staffLoggedIn", true);
             session.setAttribute("staffUsername", username);
-            
-            // Redirect to dashboard
             return "redirect:/staff";
         } else {
-            // Add error message
             model.addAttribute("error", "Invalid username or password");
             return "staff/login";
         }

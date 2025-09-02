@@ -1,56 +1,46 @@
-// Validation Service - Single Responsibility: Handle form validation
 class ValidationService {
     constructor() {
         this.rules = {};
     }
 
-    // Email validation
     isValidEmail(email) {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         return emailRegex.test(email);
     }
 
-    // Phone validation (US format)
     isValidPhone(phone) {
         const phoneRegex = /^[\+]?[1-9][\d]{1,14}$/;
         const cleaned = phone.replace(/[\s\-\(\)]/g, '');
         return phoneRegex.test(cleaned);
     }
 
-    // Date validation
     isValidDate(date) {
         const dateObj = new Date(date);
         return dateObj instanceof Date && !isNaN(dateObj);
     }
 
-    // Future date validation (includes today)
     isFutureDate(date) {
-        // Parse date as local date to avoid timezone issues
         const [year, month, day] = date.split('-').map(Number);
-        const dateObj = new Date(year, month - 1, day); // month is 0-indexed
+        const dateObj = new Date(year, month - 1, day);
         const today = new Date();
         today.setHours(0, 0, 0, 0);
         return dateObj >= today;
     }
 
-    // Strictly future date validation (excludes today)
     isStrictlyFutureDate(date) {
-        // Parse date as local date to avoid timezone issues
         const [year, month, day] = date.split('-').map(Number);
-        const dateObj = new Date(year, month - 1, day); // month is 0-indexed
+        const dateObj = new Date(year, month - 1, day);
         const today = new Date();
         today.setHours(0, 0, 0, 0);
         return dateObj > today;
     }
 
-    // Date range validation
     isValidDateRange(startDate, endDate) {
         const start = new Date(startDate);
         const end = new Date(endDate);
         return start <= end;
     }
 
-    // Party size validation
     isValidPartySize(size, siteType) {
         const maxSizes = {
             'FULL_HOOKUP': 15,
@@ -59,18 +49,15 @@ class ValidationService {
         return size > 0 && size <= (maxSizes[siteType] || 15);
     }
 
-    // License plate validation
     isValidLicensePlate(plate) {
         const plateRegex = /^[A-Z0-9\-\s]{2,10}$/i;
         return plateRegex.test(plate);
     }
 
-    // RV length validation
     isValidRvLength(length) {
         return length >= 10 && length <= 100;
     }
 
-    // Form validation
     validateForm(formData, rules) {
         const errors = {};
 
@@ -111,9 +98,7 @@ class ValidationService {
         return errors;
     }
 
-    // Display validation errors
     displayErrors(errors) {
-        // Clear previous errors
         document.querySelectorAll('.is-invalid').forEach(el => {
             el.classList.remove('is-invalid');
         });
@@ -121,7 +106,6 @@ class ValidationService {
             el.remove();
         });
 
-        // Display new errors
         Object.keys(errors).forEach(field => {
             const input = document.querySelector(`[name="${field}"]`);
             if (input) {
@@ -136,7 +120,6 @@ class ValidationService {
         });
     }
 
-    // Clear validation errors
     clearErrors() {
         document.querySelectorAll('.is-invalid').forEach(el => {
             el.classList.remove('is-invalid');
@@ -147,5 +130,4 @@ class ValidationService {
     }
 }
 
-// Create global instance
 window.validator = new ValidationService();

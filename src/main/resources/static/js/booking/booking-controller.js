@@ -73,7 +73,6 @@ class BookingController {
     }
 
     setMinDate() {
-        // Get today's date in local timezone to avoid timezone issues
         const today = new Date();
         const year = today.getFullYear();
         const month = String(today.getMonth() + 1).padStart(2, '0');
@@ -82,8 +81,6 @@ class BookingController {
         
         document.getElementById('startDate').min = todayString;
         document.getElementById('endDate').min = todayString;
-
-        // Update end date min when start date changes
         document.getElementById('startDate').addEventListener('change', (e) => {
             const startDate = new Date(e.target.value);
             const nextDay = new Date(startDate);
@@ -93,7 +90,6 @@ class BookingController {
     }
 
     selectSiteType(siteType) {
-        // Update visual selection
         document.querySelectorAll('.site-type-card').forEach(card => {
             card.classList.remove('border-success', 'bg-success', 'text-white');
             card.classList.add('border-light');
@@ -335,7 +331,6 @@ class BookingController {
     }
 
     selectSite(site) {
-        // Update visual selection
         document.querySelectorAll('.site-selection-card').forEach(card => {
             card.classList.remove('border-success', 'bg-light');
         });

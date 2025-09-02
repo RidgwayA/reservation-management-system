@@ -34,7 +34,6 @@ public class EmailService {
     
     public void sendConfirmationEmail(Reservation reservation) {
         try {
-            // Skip email if no SMTP configured (for demo purposes)
             if (mailUsername == null || mailUsername.trim().isEmpty()) {
                 log.info("Email not configured - skipping confirmation email for reservation: {}", 
                     reservation.getConfirmationNumber());
@@ -54,7 +53,6 @@ public class EmailService {
         } catch (Exception e) {
             log.error("Failed to send confirmation email for reservation: {}. Error: {}", 
                 reservation.getConfirmationNumber(), e.getMessage());
-            // Don't throw exception - email failure shouldn't break booking process
         }
     }
     
