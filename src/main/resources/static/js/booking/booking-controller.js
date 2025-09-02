@@ -73,9 +73,15 @@ class BookingController {
     }
 
     setMinDate() {
-        const today = new Date().toISOString().split('T')[0];
-        document.getElementById('startDate').min = today;
-        document.getElementById('endDate').min = today;
+        // Get today's date in local timezone to avoid timezone issues
+        const today = new Date();
+        const year = today.getFullYear();
+        const month = String(today.getMonth() + 1).padStart(2, '0');
+        const day = String(today.getDate()).padStart(2, '0');
+        const todayString = `${year}-${month}-${day}`;
+        
+        document.getElementById('startDate').min = todayString;
+        document.getElementById('endDate').min = todayString;
 
         // Update end date min when start date changes
         document.getElementById('startDate').addEventListener('change', (e) => {
