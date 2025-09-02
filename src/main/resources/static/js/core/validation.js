@@ -25,7 +25,9 @@ class ValidationService {
 
     // Future date validation (includes today)
     isFutureDate(date) {
-        const dateObj = new Date(date);
+        // Parse date as local date to avoid timezone issues
+        const [year, month, day] = date.split('-').map(Number);
+        const dateObj = new Date(year, month - 1, day); // month is 0-indexed
         const today = new Date();
         today.setHours(0, 0, 0, 0);
         return dateObj >= today;

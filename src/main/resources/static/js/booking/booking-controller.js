@@ -249,15 +249,19 @@ class BookingController {
 
         sites.forEach(site => {
             const siteCard = document.createElement('div');
-            siteCard.className = 'col-md-6 col-lg-4 mb-3';
+            siteCard.className = 'col-12 col-sm-6 col-md-4 col-lg-3 mb-3';
             siteCard.innerHTML = `
-                <div class="card site-selection-card" data-site-id="${site.id}" style="cursor: pointer;">
-                    <div class="card-body text-center">
-                        <h6 class="card-title">Site ${site.siteNumber}</h6>
-                        <p class="text-muted mb-1">${site.siteType.replace('_', ' ')}</p>
-                        <small class="text-info mb-1">${site.location.replace('_', ' ')}</small>
-                        <p class="fw-bold text-success">$${site.dailyRate}/night</p>
-                        <small class="text-muted">Max ${site.maxPartySize} people</small>
+                <div class="card site-selection-card h-100" data-site-id="${site.id}" style="cursor: pointer;">
+                    <div class="card-body text-center d-flex flex-column justify-content-between">
+                        <div>
+                            <h6 class="card-title">Site ${site.siteNumber}</h6>
+                            <p class="text-muted mb-1">${site.siteType.replace('_', ' ')}</p>
+                            <small class="text-info mb-1">${site.location.replace('_', ' ')}</small>
+                        </div>
+                        <div>
+                            <p class="fw-bold text-success mb-1">$${site.dailyRate}/night</p>
+                            <small class="text-muted">Max ${site.maxPartySize} people</small>
+                        </div>
                     </div>
                 </div>
             `;
@@ -277,15 +281,20 @@ class BookingController {
 
         paginationControls.style.display = 'block';
         
-        // Update page numbers
+        // Update page numbers - insert between prev and next buttons
         const pageNumbers = document.getElementById('pageNumbers');
-        pageNumbers.innerHTML = '';
+        const nextButton = document.getElementById('nextPage');
         
+        // Remove existing page number items (but keep prev/next buttons)
+        const existingPageNumbers = pageNumbers.querySelectorAll('.page-item:not(#prevPage):not(#nextPage)');
+        existingPageNumbers.forEach(item => item.remove());
+        
+        // Insert new page numbers before the next button
         for (let i = 1; i <= totalPages; i++) {
             const pageItem = document.createElement('li');
             pageItem.className = `page-item ${i === this.currentPage ? 'active' : ''}`;
             pageItem.innerHTML = `<a class="page-link" href="#" data-page="${i}">${i}</a>`;
-            pageNumbers.appendChild(pageItem);
+            pageNumbers.insertBefore(pageItem, nextButton);
         }
 
         // Update prev/next buttons
